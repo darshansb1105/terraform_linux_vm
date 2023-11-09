@@ -25,16 +25,7 @@ output "key_data" {
   value = jsondecode(azapi_resource_action.ssh_public_key_gen.output).publicKey
 }
 
-locals {
-  private_key_filename = "C:/Softwares/Terraform/DC_Viewer_Azure/Viewer_sshKey.pem"
-}
-
-resource "null_resource" "store_private_key_locally" {
-
-provisioner "local-exec" {
-  command = <<-EOT
-    echo '${jsondecode(azapi_resource_action.ssh_public_key_gen.output).privateKey}' > ${local.private_key_filename}
-    chmod 600 ${local.private_key_filename}
-  EOT
-}
+output "private_key" {
+  value = jsondecode(azapi_resource_action.ssh_public_key_gen.output).privateKey
+  sensitive = true
 }

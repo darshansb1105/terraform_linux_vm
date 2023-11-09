@@ -1,5 +1,9 @@
+variable "provider" {
+  default = azurerm.production
+}
+
 variable "resource_group_name" {
-  default = "rg-centro-admin-spoke-test-001"
+  default = "centro-rtdm-rg"
 }
 
 variable "location" {

@@ -1,5 +1,7 @@
 
+
 data "azurerm_virtual_network" "centro" {
+  provider            = azurerm.production
   name                = "${var.vnet_name}"
   resource_group_name = "${var.resource_group_name}"
 }
@@ -11,6 +13,7 @@ data "azurerm_subnet" "centro" {
 }
 
 resource "azurerm_network_security_group" "centro" {
+  
   for_each              = toset("${var.os_name}")
   name                = "${each.key}-nsg"
   location            = "${var.location}"
@@ -71,12 +74,12 @@ resource "azurerm_linux_virtual_machine" "centro" {
   
 }
 
-resource "null_resource" "example" {
+/* resource "null_resource" "example" {
      for_each              = toset("${var.os_name}")
     connection {
         type = "ssh"
         user = "${var.username}"
-        password = "${var.password}"
+        private_key = file("Viewer_sshKey")
         host =  azurerm_network_interface.centro[each.key].private_ip_address
         port = 22
     }
@@ -91,4 +94,4 @@ resource "null_resource" "example" {
             "/bin/bash /1ViewerInstallScript.sh"
         ]
     }
-}
+} */

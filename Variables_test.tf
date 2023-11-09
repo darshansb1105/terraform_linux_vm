@@ -1,3 +1,8 @@
+
+variable "provider" {
+  default = azurerm.non-prod
+}
+
 variable "resource_group_name" {
   default = "rg-centro-admin-spoke-test-001"
 }
