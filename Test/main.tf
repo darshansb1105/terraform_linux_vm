@@ -1,19 +1,24 @@
 
+#Non-Production/test
+provider "azurerm" {
+  features {}
+}
 
 data "azurerm_virtual_network" "centro" {
-  provider            = azurerm.production
+  
   name                = "${var.vnet_name}"
   resource_group_name = "${var.resource_group_name}"
 }
 
 data "azurerm_subnet" "centro" {
+  
   name                 = "${var.subnet_name}"
   virtual_network_name = data.azurerm_virtual_network.centro.name
   resource_group_name  = "${var.resource_group_name}"
 }
 
 resource "azurerm_network_security_group" "centro" {
-  
+
   for_each              = toset("${var.os_name}")
   name                = "${each.key}-nsg"
   location            = "${var.location}"
@@ -61,7 +66,7 @@ resource "azurerm_linux_virtual_machine" "centro" {
   } 
   
   admin_ssh_key {
-    username   = var.username
+    username   = "${var.username}"
     public_key = jsondecode(azapi_resource_action.ssh_public_key_gen.output).publicKey
   }
   admin_username = var.username
@@ -71,15 +76,31 @@ resource "azurerm_linux_virtual_machine" "centro" {
     caching              = "ReadWrite"
     storage_account_type   = "${var.disk_specification}"
   }
-  
+    
 }
 
-/* resource "null_resource" "example" {
+resource "azurerm_managed_disk" "centro" {
+  for_each              = toset("${var.os_name}")
+  name                 = "${each.key}_DataDisk"
+  location             = "${var.location}"
+  resource_group_name  = "${var.resource_group_name}"
+  storage_account_type = "${var.disk_specification}"
+  create_option        = "Empty"
+  disk_size_gb         = 50
+}
+resource "azurerm_virtual_machine_data_disk_attachment" "example" {
+  for_each              = toset("${var.os_name}")
+  managed_disk_id    = azurerm_managed_disk.centro[each.key].id
+  virtual_machine_id = azurerm_linux_virtual_machine.centro[each.key].id
+  lun                ="10"
+  caching            = "ReadWrite"
+}
+resource "null_resource" "example" {
      for_each              = toset("${var.os_name}")
     connection {
         type = "ssh"
         user = "${var.username}"
-        private_key = file("Viewer_sshKey")
+        password = "${var.password}"
         host =  azurerm_network_interface.centro[each.key].private_ip_address
         port = 22
     }
@@ -88,10 +109,10 @@ resource "azurerm_linux_virtual_machine" "centro" {
         destination = "/1ViewerInstallScript.sh"
     }
 
-    provisioner "remote-exec" {
-        inline = [
-            "chmod +x /1ViewerInstallScript.sh",
-            "/bin/bash /1ViewerInstallScript.sh"
-        ]
-    }
-} */
+    # provisioner "remote-exec" {
+    #     inline = [
+    #         "chmod +x /1ViewerInstallScript.sh",
+    #         "/bin/bash /1ViewerInstallScript.sh "
+    #     ]
+    # }
+}

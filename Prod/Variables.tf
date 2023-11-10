@@ -1,10 +1,6 @@
 
-variable "provider" {
-  default = azurerm.non-prod
-}
-
 variable "resource_group_name" {
-  default = "rg-centro-admin-spoke-test-001"
+  default = "centro-rtdm-rg"
 }
 
 variable "location" {
@@ -25,11 +21,11 @@ variable "os_name" {
   
 
 variable "vm_size" {
-  default =  "D2s_v3"
+  default =  "Standard_D16s_V3"
 }
 
 variable "disk_specification" {
-  default = "Standard_LRS"
+  default = "Premium_LRS"
 }
 
 variable "username" {

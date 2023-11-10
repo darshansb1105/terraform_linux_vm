@@ -1,0 +1,25 @@
+trigger:
+  - master
+  
+pool:
+    vmImage: ubuntu-latest
+  
+parameters:
+    - name: environment
+      type: string
+      values: 
+        - Prod
+        - Test
+      displayName: Environment
+      default: Test
+  
+stages:
+   - stage: Deploy
+     jobs:
+       - job : Deploy
+         steps:
+           - script: |
+                cd $(System.DefaultWorkingDirectory)/${{ parameters.environment }} 
+                terraform init
+                terraform plan 
+                terraform apply -auto-approve
