@@ -91,19 +91,19 @@ resource "azurerm_virtual_machine_data_disk_attachment" "example" {
   lun                ="10"
   caching            = "ReadWrite"
 }
-resource "null_resource" "example" {
-     for_each              = toset("${var.os_name}")
-    connection {
-        type = "ssh"
-        user = "${var.username}"
-        password = "${var.password}"
-        host =  azurerm_network_interface.centro[each.key].private_ip_address
-        port = 22
-    }
-    provisioner "file" {
-        source = "1ViewerInstallScript.sh"
-        destination = "/1ViewerInstallScript.sh"
-    }
+# resource "null_resource" "example" {
+#      for_each              = toset("${var.os_name}")
+#     connection {
+#         type = "ssh"
+#         user = "${var.username}"
+#         password = "${var.password}"
+#         host =  azurerm_network_interface.centro[each.key].private_ip_address
+#         port = 22
+#     }
+#     provisioner "file" {
+#         source = "1ViewerInstallScript.sh"
+#         destination = "/1ViewerInstallScript.sh"
+#     }
 
 #     provisioner "remote-exec" {
 #         inline = [
@@ -111,4 +111,4 @@ resource "null_resource" "example" {
 #             "/bin/bash /1ViewerInstallScript.sh "
 #         ]
 #     }
-}
+# }
